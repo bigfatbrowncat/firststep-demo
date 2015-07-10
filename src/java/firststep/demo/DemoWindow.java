@@ -47,53 +47,53 @@ public class DemoWindow extends Window {
 		ArcAnimator[] cornerAnims = new ArcAnimator[4];
 		
 		float time = 0; 
-		lineAnims[0] = new LineAnimator(time, time + tline, Aftermath.SAVE,
+		lineAnims[0] = new LineAnimator(time, tline, Aftermath.SAVE,
 				boxLeft + cornerRadius, 
 				boxTop, 
 				boxRight - cornerRadius, 
 				boxTop);
 		time += tline;
 
-		cornerAnims[0] = new ArcAnimator(time, time + tcorner, Aftermath.SAVE, 
-				boxLeft + cornerRadius, 
+		cornerAnims[0] = new ArcAnimator(time, tcorner, Aftermath.SAVE, 
+				boxRight - cornerRadius, 
 				boxTop + cornerRadius, 
-				cornerRadius, -(float)Math.PI, -(float)Math.PI / 2, Winding.CW);
+				cornerRadius, -(float)Math.PI / 2, 0, Winding.CW);
 		time += tcorner;
-		
-		lineAnims[1] = new LineAnimator(time, time + tline, Aftermath.SAVE,
+
+		lineAnims[1] = new LineAnimator(time, tline, Aftermath.SAVE,
 				boxLeft, 
 				boxBottom - cornerRadius,
 				boxLeft, 
 				boxTop + cornerRadius);
 		time += tline;
 
-		cornerAnims[1] = new ArcAnimator(time, time + tcorner, Aftermath.SAVE, 
-				boxRight - cornerRadius, 
+		cornerAnims[1] = new ArcAnimator(time, tcorner, Aftermath.SAVE, 
+				boxLeft + cornerRadius, 
 				boxTop + cornerRadius, 
-				cornerRadius, -(float)Math.PI / 2, 0, Winding.CW);
+				cornerRadius, -(float)Math.PI, -(float)Math.PI / 2, Winding.CW);
 		time += tcorner;
-
-		lineAnims[2] = new LineAnimator(time, time + tline, Aftermath.SAVE,
+		
+		lineAnims[2] = new LineAnimator(time, tline, Aftermath.SAVE,
 				boxRight - cornerRadius, 
 				boxBottom,
 				boxLeft + cornerRadius, 
 				boxBottom);
 		time += tline;
 
-		cornerAnims[2] = new ArcAnimator(time, time + tcorner, Aftermath.SAVE, 
+		cornerAnims[2] = new ArcAnimator(time, tcorner, Aftermath.SAVE, 
 				boxRight - cornerRadius, 
 				boxBottom - cornerRadius, 
 				cornerRadius, 0, (float)Math.PI / 2, Winding.CW);
 		time += tcorner;
 
-		lineAnims[3] = new LineAnimator(time, time + tline, Aftermath.SAVE,
+		lineAnims[3] = new LineAnimator(time, tline, Aftermath.SAVE,
 				boxRight, 
 				boxTop + cornerRadius,
 				boxRight, 
 				boxBottom - cornerRadius);
 		time += tline;
 		
-		cornerAnims[3] = new ArcAnimator(time, time + tcorner, Aftermath.SAVE, 
+		cornerAnims[3] = new ArcAnimator(time, tcorner, Aftermath.SAVE, 
 				boxLeft + cornerRadius, 
 				boxBottom - cornerRadius, 
 				cornerRadius, (float)Math.PI / 2, (float)Math.PI, Winding.CW);
