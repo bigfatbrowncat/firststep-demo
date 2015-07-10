@@ -12,7 +12,9 @@ public abstract class Animator {
 	
 	public void doFrame(Canvas cnv, float currentTime) {
 		if (currentTime > startTime) {
-			frame(cnv, Math.min(currentTime - startTime, duration));
+			if (currentTime < startTime + duration || aftermath == Aftermath.SAVE) {
+				frame(cnv, Math.min(currentTime - startTime, duration));
+			}
 		}
 	}
 	
