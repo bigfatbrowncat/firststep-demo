@@ -2,11 +2,11 @@ package firststep.demo.base;
 
 import firststep.Canvas;
 
-public abstract class Animator {
+public abstract class Animation {
 	public enum Aftermath {
 		SAVE, REMOVE
 	}
-	
+
 	private float startTime, duration;
 	private Aftermath aftermath;
 	
@@ -24,10 +24,20 @@ public abstract class Animator {
 	
 	protected abstract void frame(Canvas cnv, float timeSinceStart);
 	
-	public Animator(float startTime, float duration, Aftermath aftermath) {
+	public Animation(float startTime, float duration, Aftermath aftermath) {
 		this.startTime = startTime;
 		this.duration = duration;
 		this.aftermath = aftermath;
+	}
+	
+	/**
+	 * Creates one animation after another
+	 * @param previous
+	 * @param duration
+	 * @param aftermath
+	 */
+	protected Animation(Animation previous, float duration, Aftermath aftermath) {
+		this(previous.startTime + previous.duration, duration, aftermath);
 	}
 	
 	public float getStartTime() {

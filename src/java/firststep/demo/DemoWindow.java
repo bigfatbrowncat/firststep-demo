@@ -4,8 +4,8 @@ import firststep.Canvas;
 import firststep.Canvas.Winding;
 import firststep.Color;
 import firststep.Window;
-import firststep.demo.base.Animator.Aftermath;
-import firststep.demo.base.AnimatorsManager;
+import firststep.demo.base.Animation.Aftermath;
+import firststep.demo.base.AnimationsGroup;
 
 public class DemoWindow extends Window {
 	
@@ -14,21 +14,18 @@ public class DemoWindow extends Window {
 	private static float fps = 25.0f;
 	private static long startupMoment;
 	
-	private AnimatorsManager animatorsManager = new AnimatorsManager();
+	private AnimationsGroup animatorsManager;
 
 	@Override
 	protected void frame(Canvas cnv) {
 		float timeSinceStartup = (float)((double)System.currentTimeMillis() - startupMoment) / 1000;
+
+		cnv.strokeColor(new Color(255, 255, 192));
 		animatorsManager.doFrame(cnv, timeSinceStartup);
-		
-		cnv.beginPath();
-		cnv.arc(50, 50, 30, 0, 6.2f, Winding.CW);
-		cnv.stroke();
 	}
 
 	@Override
 	protected void windowSize(int width, int height) {
-		animatorsManager.clear();
 		int xCenter = width / 2;
 		int yCenter = height / 2;
 		
@@ -40,65 +37,57 @@ public class DemoWindow extends Window {
 		float boxRight = xCenter + squareSize / 2;
 		float boxBottom = yCenter + squareSize / 2;
 
-		float tline = 1f;
-		float tcorner = 0.5f;
+		float tline = 0.3f;
+		float tcorner = 0.2f;
 		
-		LineAnimator[] lineAnims = new LineAnimator[4];
-		ArcAnimator[] cornerAnims = new ArcAnimator[4];
+		LineAnimation[] lineAnims = new LineAnimation[4];
+		ArcAnimation[] cornerAnims = new ArcAnimation[4];
 		
-		float time = 0; 
-		lineAnims[0] = new LineAnimator(time, tline, Aftermath.SAVE,
+		lineAnims[0] = new LineAnimation(1.0f, tline * 2, Aftermath.SAVE,
 				boxLeft + cornerRadius, 
 				boxTop, 
 				boxRight - cornerRadius, 
 				boxTop);
-		time += tline;
 
-		cornerAnims[0] = new ArcAnimator(time, tcorner, Aftermath.SAVE, 
+		cornerAnims[0] = ArcAnimation.after(lineAnims[0], tcorner, Aftermath.SAVE, 
 				boxRight - cornerRadius, 
 				boxTop + cornerRadius, 
 				cornerRadius, -(float)Math.PI / 2, 0, Winding.CW);
-		time += tcorner;
 
-		lineAnims[1] = new LineAnimator(time, tline, Aftermath.SAVE,
-				boxLeft, 
-				boxBottom - cornerRadius,
-				boxLeft, 
-				boxTop + cornerRadius);
-		time += tline;
-
-		cornerAnims[1] = new ArcAnimator(time, tcorner, Aftermath.SAVE, 
-				boxLeft + cornerRadius, 
-				boxTop + cornerRadius, 
-				cornerRadius, -(float)Math.PI, -(float)Math.PI / 2, Winding.CW);
-		time += tcorner;
-		
-		lineAnims[2] = new LineAnimator(time, tline, Aftermath.SAVE,
-				boxRight - cornerRadius, 
-				boxBottom,
-				boxLeft + cornerRadius, 
-				boxBottom);
-		time += tline;
-
-		cornerAnims[2] = new ArcAnimator(time, tcorner, Aftermath.SAVE, 
-				boxRight - cornerRadius, 
-				boxBottom - cornerRadius, 
-				cornerRadius, 0, (float)Math.PI / 2, Winding.CW);
-		time += tcorner;
-
-		lineAnims[3] = new LineAnimator(time, tline, Aftermath.SAVE,
+		lineAnims[1] = LineAnimation.after(cornerAnims[0], tline, Aftermath.SAVE,
 				boxRight, 
 				boxTop + cornerRadius,
 				boxRight, 
 				boxBottom - cornerRadius);
-		time += tline;
-		
-		cornerAnims[3] = new ArcAnimator(time, tcorner, Aftermath.SAVE, 
+
+		cornerAnims[1] = ArcAnimation.after(lineAnims[1], tcorner, Aftermath.SAVE, 
+				boxRight - cornerRadius, 
+				boxBottom - cornerRadius, 
+				cornerRadius, 0, (float)Math.PI / 2, Winding.CW);
+
+		lineAnims[2] = LineAnimation.after(cornerAnims[1], tline, Aftermath.SAVE,
+				boxRight - cornerRadius, 
+				boxBottom,
+				boxLeft + cornerRadius, 
+				boxBottom);
+
+		cornerAnims[2] = ArcAnimation.after(lineAnims[2], tcorner, Aftermath.SAVE, 
 				boxLeft + cornerRadius, 
 				boxBottom - cornerRadius, 
 				cornerRadius, (float)Math.PI / 2, (float)Math.PI, Winding.CW);
-		time += tcorner;
+
+		lineAnims[3] = LineAnimation.after(cornerAnims[2], tline, Aftermath.SAVE,
+				boxLeft, 
+				boxBottom - cornerRadius,
+				boxLeft, 
+				boxTop + cornerRadius);
+
+		cornerAnims[3] = ArcAnimation.after(lineAnims[3], tcorner, Aftermath.SAVE, 
+				boxLeft + cornerRadius, 
+				boxTop + cornerRadius, 
+				cornerRadius, -(float)Math.PI, -(float)Math.PI / 2, Winding.CW);
 		
+		animatorsManager = new AnimationsGroup(2.0f, cornerAnims[3].getStartTime() + cornerAnims[3].getDuration(), Aftermath.SAVE);
 		animatorsManager.addAnimator(lineAnims[0]);
 		animatorsManager.addAnimator(lineAnims[1]);
 		animatorsManager.addAnimator(lineAnims[2]);
