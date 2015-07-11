@@ -3,6 +3,9 @@ package firststep.demo;
 import firststep.Canvas;
 import firststep.Canvas.Winding;
 import firststep.Color;
+import firststep.Framebuffer;
+import firststep.Image;
+import firststep.Paint;
 import firststep.Window;
 import firststep.demo.base.Animation.Aftermath;
 import firststep.demo.base.AnimationsGroup;
@@ -15,13 +18,63 @@ public class DemoWindow extends Window {
 	private static long startupMoment;
 	
 	private AnimationsGroup animatorsManager;
+	
+	Framebuffer fb, fb2;
+	Paint fbPaint, fbPaint2;
 
 	@Override
 	protected void frame(Canvas cnv) {
 		float timeSinceStartup = (float)((double)System.currentTimeMillis() - startupMoment) / 1000;
 
-		cnv.strokeColor(new Color(255, 255, 192));
-		animatorsManager.doFrame(cnv, timeSinceStartup);
+		if (fb == null) {
+			fb = cnv.createFramebuffer(100, 100, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+			fb.beginDrawing(1.0f);
+			cnv.save();
+			cnv.beginPath();
+			cnv.rect(((float)timeSinceStartup * 50) % 50, 0, 50.0f, 50.0f);
+			cnv.fillColor(new Color(255, 128, 128));
+			cnv.fill();
+			cnv.restore();
+			fb.endDrawing();
+		}
+		fbPaint = cnv.imagePattern(0, 0, 50.0f, 50.0f, 0.2f*timeSinceStartup, fb.getImage(), 1.0f);
+
+		if (fb2 == null) {
+			fb2 = cnv.createFramebuffer(100, 100, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+			fb2.beginDrawing(1.0f);
+			cnv.save();
+			cnv.beginPath();
+			cnv.rect(((float)timeSinceStartup * 50) % 50, 0, 50.0f, 50.0f);
+			cnv.fillColor(new Color(128, 255, 128));
+			cnv.fill();
+			cnv.restore();
+			fb2.endDrawing();
+		}
+		fbPaint2 = cnv.imagePattern(0, 0, 50.0f, 50.0f, -0.2f*timeSinceStartup, fb2.getImage(), 1.0f);
+		
+		//System.out.println(fb.id + ", " + fb2.id);
+		Framebuffer mainFb = cnv.getMainFramebuffer(); 
+		mainFb.beginDrawing(1.0f);
+
+		cnv.save();
+		cnv.beginPath();
+		cnv.rect(100.0f, 30.0f, 200.0f, 300.0f);
+		cnv.fillPaint(fbPaint);
+		cnv.fill();
+		cnv.restore();
+
+		cnv.save();
+		cnv.beginPath();
+		cnv.rect(100.0f, 30.0f, 200.0f, 300.0f);
+		cnv.fillPaint(fbPaint2);
+		cnv.fill();
+		cnv.restore();
+
+		mainFb.endDrawing();
+
+//		cnv.strokeColor(new Color(255, 255, 192));
+//		animatorsManager.doFrame(cnv, timeSinceStartup);
+		
 	}
 
 	@Override
