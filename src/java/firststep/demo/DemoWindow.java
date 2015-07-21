@@ -17,10 +17,10 @@ public class DemoWindow extends Window {
 	private static float fps = 25.0f;
 	private static long startupMoment;
 	
-	private AnimationsGroup animatorsManager;
+	private AnimationsGroup animationsGroup;
 	
 	Framebuffer fb, fb2;
-	Paint fbPaint, fbPaint2;
+	Paint fbPaint, fb2Paint;
 
 	@Override
 	protected void frame(Canvas cnv) {
@@ -28,62 +28,62 @@ public class DemoWindow extends Window {
 
 		if (fb == null) {
 			fb = cnv.createFramebuffer(100, 100, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-			fb.beginDrawing(1.0f);
-			cnv.save();
-			cnv.beginPath();
-			cnv.rect(((float)timeSinceStartup * 50) % 50, 0, 50.0f, 50.0f);
-			cnv.fillColor(new Color(255, 128, 128));
-			cnv.fill();
-			cnv.restore();
-			fb.endDrawing();
 		}
-		fbPaint = cnv.imagePattern(0, 0, 50.0f, 50.0f, 0.2f*timeSinceStartup, fb.getImage(), 1.0f);
-
+		fb.beginDrawing(1.0f);
+		//cnv.save();
+		cnv.fillColor(new Color(255, 128, 128));
+		cnv.beginPath();
+		cnv.roundedRect((float)Math.sin(timeSinceStartup) * 50, 0, 50.0f, 50.0f, 10.0f);
+		cnv.fill();
+		//cnv.restore();
+		fb.endDrawing();
+			
 		if (fb2 == null) {
 			fb2 = cnv.createFramebuffer(100, 100, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-			fb2.beginDrawing(1.0f);
-			cnv.save();
-			cnv.beginPath();
-			cnv.rect(((float)timeSinceStartup * 50) % 50, 0, 50.0f, 50.0f);
-			cnv.fillColor(new Color(128, 255, 128));
-			cnv.fill();
-			cnv.restore();
-			fb2.endDrawing();
 		}
-		fbPaint2 = cnv.imagePattern(0, 0, 50.0f, 50.0f, -0.2f*timeSinceStartup, fb2.getImage(), 1.0f);
+		fb2.beginDrawing(1.0f);
+		//cnv.save();
+		cnv.beginPath();
+		cnv.rect((float)Math.sin(timeSinceStartup) * 50, 0, 50.0f, 50.0f);
+		cnv.fillColor(new Color(128, 255, 128));
+		cnv.fill();
+		//cnv.restore();
+		fb2.endDrawing();
 		
-		//System.out.println(fb.id + ", " + fb2.id);
+		fbPaint = cnv.imagePattern(0, 0, 50.0f, 50.0f, 0.2f*timeSinceStartup, fb.getImage(), 1.0f);
+		fb2Paint = cnv.imagePattern(0, 0, 100.0f, 100.0f, -0.1f*timeSinceStartup, fb2.getImage(), 0.5f);
+
 		Framebuffer mainFb = cnv.getMainFramebuffer(); 
 		mainFb.beginDrawing(1.0f);
 
-		cnv.save();
-		cnv.beginPath();
-		cnv.rect(100.0f, 30.0f, 200.0f, 300.0f);
-		cnv.fillPaint(fbPaint);
-		cnv.fill();
-		cnv.restore();
+		if (!animationsGroup.isActual(timeSinceStartup)) {
+			cnv.beginPath();
+			cnv.roundedRect(xCenter - squareSize / 2, yCenter - squareSize / 2, squareSize, squareSize, cornerRadius);
+			cnv.fillPaint(fbPaint);
+			cnv.fill();
+			cnv.fillPaint(fb2Paint);
+			cnv.fill();
+		}
 
-		cnv.save();
-		cnv.beginPath();
-		cnv.rect(100.0f, 30.0f, 200.0f, 300.0f);
-		cnv.fillPaint(fbPaint2);
-		cnv.fill();
-		cnv.restore();
+		cnv.strokeColor(new Color(255, 255, 192));
+		animationsGroup.doFrame(cnv, timeSinceStartup);
 
 		mainFb.endDrawing();
 
-//		cnv.strokeColor(new Color(255, 255, 192));
-//		animatorsManager.doFrame(cnv, timeSinceStartup);
 		
 	}
 
+	
+	int xCenter;
+	int yCenter;
+
+	float squareSize = 80;
+	float cornerRadius = 15;
+
 	@Override
 	protected void windowSize(int width, int height) {
-		int xCenter = width / 2;
-		int yCenter = height / 2;
-		
-		float squareSize = 80;
-		float cornerRadius = 15;
+		xCenter = width / 2;
+		yCenter = height / 2;
 		
 		float boxLeft = xCenter - squareSize / 2;
 		float boxTop = yCenter - squareSize / 2;
@@ -96,7 +96,7 @@ public class DemoWindow extends Window {
 		LineAnimation[] lineAnims = new LineAnimation[4];
 		ArcAnimation[] cornerAnims = new ArcAnimation[4];
 		
-		lineAnims[0] = new LineAnimation(1.0f, tline * 2, Aftermath.SAVE,
+		lineAnims[0] = new LineAnimation(0.2f, tline * 2, Aftermath.SAVE,
 				boxLeft + cornerRadius, 
 				boxTop, 
 				boxRight - cornerRadius, 
@@ -140,15 +140,15 @@ public class DemoWindow extends Window {
 				boxTop + cornerRadius, 
 				cornerRadius, -(float)Math.PI, -(float)Math.PI / 2, Winding.CW);
 		
-		animatorsManager = new AnimationsGroup(2.0f, cornerAnims[3].getStartTime() + cornerAnims[3].getDuration(), Aftermath.SAVE);
-		animatorsManager.addAnimator(lineAnims[0]);
-		animatorsManager.addAnimator(lineAnims[1]);
-		animatorsManager.addAnimator(lineAnims[2]);
-		animatorsManager.addAnimator(lineAnims[3]);
-		animatorsManager.addAnimator(cornerAnims[0]);
-		animatorsManager.addAnimator(cornerAnims[1]);
-		animatorsManager.addAnimator(cornerAnims[2]);
-		animatorsManager.addAnimator(cornerAnims[3]);
+		animationsGroup = new AnimationsGroup(2.0f, cornerAnims[3].getStartTime() + cornerAnims[3].getDuration(), Aftermath.SAVE);
+		animationsGroup.addAnimation(lineAnims[0]);
+		animationsGroup.addAnimation(lineAnims[1]);
+		animationsGroup.addAnimation(lineAnims[2]);
+		animationsGroup.addAnimation(lineAnims[3]);
+		animationsGroup.addAnimation(cornerAnims[0]);
+		animationsGroup.addAnimation(cornerAnims[1]);
+		animationsGroup.addAnimation(cornerAnims[2]);
+		animationsGroup.addAnimation(cornerAnims[3]);
 	}
 	
 	public DemoWindow() {

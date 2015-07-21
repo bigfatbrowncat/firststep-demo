@@ -17,7 +17,7 @@ public class AnimationsGroup extends Animation {
 		super(startTime, duration, aftermath);
 	}
 	
-	public void addAnimator(Animation animator) {
+	public void addAnimation(Animation animator) {
 		animators.add(animator);
 	}
 	
