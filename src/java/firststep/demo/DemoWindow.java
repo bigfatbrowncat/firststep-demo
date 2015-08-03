@@ -60,7 +60,7 @@ public class DemoWindow extends Window {
 
 					float alphaDelta1 = (float)( 1.0 - 0.5 / timeSinceStartup);// Math.min(Math.sqrt(timeSinceStartup / 3), 1.0);
 
-					float delta1 = (float) Math.max(1.0 * (2.0 - timeSinceStartup), 1.0);
+					float delta1 = (float)( 1.0 + 0.02 / (timeSinceStartup - 1));
 					float delta2 = (float) Math.max(2.0 * (2.2 - timeSinceStartup), 1.0);
 					
 					cnv.fillColor(foreRed, foreGreen, foreBlue, 0.5f * alphaDelta1);
@@ -121,7 +121,7 @@ public class DemoWindow extends Window {
 
 				float alphaDelta = (float)( 1.0 - 0.5 * Math.pow(timeSinceStartup, -0.5));
 				cnv.strokeColor(new Color(foreRed, foreGreen, foreBlue, alphaDelta));
-				roundRectAnimation.doFrame(cnv, 1.5f * (float)Math.sqrt(timeSinceStartup));
+				roundRectAnimation.doFrame(cnv, 0.4f * timeSinceStartup * timeSinceStartup);
 
 			}
 		});
