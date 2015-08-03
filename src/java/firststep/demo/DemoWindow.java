@@ -3,6 +3,7 @@ package firststep.demo;
 import firststep.Canvas;
 import firststep.Canvas.Winding;
 import firststep.Color;
+import firststep.Font;
 import firststep.Framebuffer;
 import firststep.Framebuffer.DrawListener;
 import firststep.Image;
@@ -24,13 +25,14 @@ public class DemoWindow extends Window {
 		return (float)((double)System.currentTimeMillis() - startupMoment) / 1000;
 	}
 	
-	Framebuffer fb, fb2;
-	Paint fbPaint, fb2Paint;
+	Framebuffer textFb, fb2;
+	Font boldFont;
+	Paint textFbPaint, fb2Paint;
 
 	int xCenter;
 	int yCenter;
 
-	float squareSize = 80;
+	int squareSize = 80;
 	float cornerRadius = 15;
 
 	@Override
@@ -105,30 +107,38 @@ public class DemoWindow extends Window {
 		
 		Framebuffer mainFb = getMainFramebuffer(); 
 
-		if (fb == null) {
-			fb = createFramebuffer(100, 100, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-			mainFb.addDependency(fb);
-			fb.setDrawListener(new DrawListener() {
+		if (textFb == null) {
+			textFb = createFramebuffer(squareSize, squareSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+			mainFb.addDependency(textFb);
+			textFb.setDrawListener(new DrawListener() {
 				@Override
 				public void draw(Canvas cnv) {
 					float timeSinceStartup = getTimeSinceStartup();
-					cnv.fillColor(new Color(255, 128, 128));
+					
+					if (boldFont == null) {
+						boldFont = cnv.createFont("bold", "JosefinSans-Bold.ttf");
+					}
+
+					cnv.fontFace("bold");
+					cnv.fontSize(squareSize);
 					cnv.beginPath();
-					cnv.roundedRect((float)Math.sin(timeSinceStartup) * 50, 0, 50.0f, 50.0f, 10.0f);
+					cnv.text(squareSize * 0.7f, squareSize * 0.8f, "f");
+					cnv.fillColor(new Color(0.5f, 0.5f, 0.5f, 1.f));
 					cnv.fill();
+
 				}
 			});
 		}
 			
 		if (fb2 == null) {
-			fb2 = createFramebuffer(100, 100, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+			fb2 = createFramebuffer(squareSize, squareSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
 			mainFb.addDependency(fb2);
 			fb2.setDrawListener(new DrawListener() {
 				@Override
 				public void draw(Canvas cnv) {
 					float timeSinceStartup = getTimeSinceStartup();
 					cnv.beginPath();
-					cnv.rect((float)Math.sin(timeSinceStartup) * 50, 0, 50.0f, 50.0f);
+					cnv.rect(0, 0, squareSize / 2, squareSize / 2);
 					cnv.fillColor(new Color(128, 255, 128));
 					cnv.fill();
 				}
@@ -140,20 +150,21 @@ public class DemoWindow extends Window {
 			public void draw(Canvas cnv) {
 				float timeSinceStartup = getTimeSinceStartup();
 
-				fbPaint = cnv.imagePattern(0, 0, 50.0f, 50.0f, 0.2f*timeSinceStartup, fb.getImage(), 1.0f);
-				fb2Paint = cnv.imagePattern(0, 0, 100.0f, 100.0f, -0.1f*timeSinceStartup, fb2.getImage(), 0.5f);
+				textFbPaint = cnv.imagePattern(xCenter - squareSize / 2, yCenter - squareSize / 2, squareSize, squareSize, 0, textFb.getImage(), 1.0f);
+				fb2Paint = cnv.imagePattern(xCenter - squareSize / 2, yCenter - squareSize / 2, squareSize, squareSize, 0, fb2.getImage(), 1.0f);
 
-				if (!animationsGroup.isActual(timeSinceStartup)) {
+				//if (!animationsGroup.isActual(timeSinceStartup)) {
 					cnv.beginPath();
 					cnv.roundedRect(xCenter - squareSize / 2, yCenter - squareSize / 2, squareSize, squareSize, cornerRadius);
-					cnv.fillPaint(fbPaint);
+					cnv.fillPaint(textFbPaint);
 					cnv.fill();
 					cnv.fillPaint(fb2Paint);
 					cnv.fill();
-				}
+				//}
 
 				cnv.strokeColor(new Color(255, 255, 192));
 				animationsGroup.doFrame(cnv, timeSinceStartup);
+
 			}
 		});
 
@@ -161,7 +172,7 @@ public class DemoWindow extends Window {
 	}
 	
 	public DemoWindow() {
-		super (APPNAME, 600, 400, new Color(0.5f, 0.5f, 0.5f, 1.0f));
+		super (APPNAME, 600, 400, new Color(0.1f, 0.1f, 0.2f, 1.0f));
 		startupMoment = System.currentTimeMillis();
 	}
 	
