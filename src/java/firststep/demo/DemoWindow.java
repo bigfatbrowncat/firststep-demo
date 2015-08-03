@@ -4,6 +4,7 @@ import firststep.Canvas;
 import firststep.Canvas.Winding;
 import firststep.Color;
 import firststep.Framebuffer;
+import firststep.Framebuffer.DrawListener;
 import firststep.Image;
 import firststep.Paint;
 import firststep.Window;
@@ -18,62 +19,14 @@ public class DemoWindow extends Window {
 	private static long startupMoment;
 	
 	private AnimationsGroup animationsGroup;
+
+	private float getTimeSinceStartup() {
+		return (float)((double)System.currentTimeMillis() - startupMoment) / 1000;
+	}
 	
 	Framebuffer fb, fb2;
 	Paint fbPaint, fb2Paint;
 
-	@Override
-	protected void frame(Canvas cnv) {
-		float timeSinceStartup = (float)((double)System.currentTimeMillis() - startupMoment) / 1000;
-
-		if (fb == null) {
-			fb = cnv.createFramebuffer(100, 100, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-		}
-		fb.beginDrawing(1.0f);
-		//cnv.save();
-		cnv.fillColor(new Color(255, 128, 128));
-		cnv.beginPath();
-		cnv.roundedRect((float)Math.sin(timeSinceStartup) * 50, 0, 50.0f, 50.0f, 10.0f);
-		cnv.fill();
-		//cnv.restore();
-		fb.endDrawing();
-			
-		if (fb2 == null) {
-			fb2 = cnv.createFramebuffer(100, 100, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-		}
-		fb2.beginDrawing(1.0f);
-		//cnv.save();
-		cnv.beginPath();
-		cnv.rect((float)Math.sin(timeSinceStartup) * 50, 0, 50.0f, 50.0f);
-		cnv.fillColor(new Color(128, 255, 128));
-		cnv.fill();
-		//cnv.restore();
-		fb2.endDrawing();
-		
-		fbPaint = cnv.imagePattern(0, 0, 50.0f, 50.0f, 0.2f*timeSinceStartup, fb.getImage(), 1.0f);
-		fb2Paint = cnv.imagePattern(0, 0, 100.0f, 100.0f, -0.1f*timeSinceStartup, fb2.getImage(), 0.5f);
-
-		Framebuffer mainFb = cnv.getMainFramebuffer(); 
-		mainFb.beginDrawing(1.0f);
-
-		if (!animationsGroup.isActual(timeSinceStartup)) {
-			cnv.beginPath();
-			cnv.roundedRect(xCenter - squareSize / 2, yCenter - squareSize / 2, squareSize, squareSize, cornerRadius);
-			cnv.fillPaint(fbPaint);
-			cnv.fill();
-			cnv.fillPaint(fb2Paint);
-			cnv.fill();
-		}
-
-		cnv.strokeColor(new Color(255, 255, 192));
-		animationsGroup.doFrame(cnv, timeSinceStartup);
-
-		mainFb.endDrawing();
-
-		
-	}
-
-	
 	int xCenter;
 	int yCenter;
 
@@ -149,6 +102,62 @@ public class DemoWindow extends Window {
 		animationsGroup.addAnimation(cornerAnims[1]);
 		animationsGroup.addAnimation(cornerAnims[2]);
 		animationsGroup.addAnimation(cornerAnims[3]);
+		
+		Framebuffer mainFb = getMainFramebuffer(); 
+
+		if (fb == null) {
+			fb = createFramebuffer(100, 100, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+			mainFb.addDependency(fb);
+			fb.setDrawListener(new DrawListener() {
+				@Override
+				public void draw(Canvas cnv) {
+					float timeSinceStartup = getTimeSinceStartup();
+					cnv.fillColor(new Color(255, 128, 128));
+					cnv.beginPath();
+					cnv.roundedRect((float)Math.sin(timeSinceStartup) * 50, 0, 50.0f, 50.0f, 10.0f);
+					cnv.fill();
+				}
+			});
+		}
+			
+		if (fb2 == null) {
+			fb2 = createFramebuffer(100, 100, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+			mainFb.addDependency(fb2);
+			fb2.setDrawListener(new DrawListener() {
+				@Override
+				public void draw(Canvas cnv) {
+					float timeSinceStartup = getTimeSinceStartup();
+					cnv.beginPath();
+					cnv.rect((float)Math.sin(timeSinceStartup) * 50, 0, 50.0f, 50.0f);
+					cnv.fillColor(new Color(128, 255, 128));
+					cnv.fill();
+				}
+			});
+		}
+
+		mainFb.setDrawListener(new DrawListener() {
+			@Override
+			public void draw(Canvas cnv) {
+				float timeSinceStartup = getTimeSinceStartup();
+
+				fbPaint = cnv.imagePattern(0, 0, 50.0f, 50.0f, 0.2f*timeSinceStartup, fb.getImage(), 1.0f);
+				fb2Paint = cnv.imagePattern(0, 0, 100.0f, 100.0f, -0.1f*timeSinceStartup, fb2.getImage(), 0.5f);
+
+				if (!animationsGroup.isActual(timeSinceStartup)) {
+					cnv.beginPath();
+					cnv.roundedRect(xCenter - squareSize / 2, yCenter - squareSize / 2, squareSize, squareSize, cornerRadius);
+					cnv.fillPaint(fbPaint);
+					cnv.fill();
+					cnv.fillPaint(fb2Paint);
+					cnv.fill();
+				}
+
+				cnv.strokeColor(new Color(255, 255, 192));
+				animationsGroup.doFrame(cnv, timeSinceStartup);
+			}
+		});
+
+
 	}
 	
 	public DemoWindow() {
