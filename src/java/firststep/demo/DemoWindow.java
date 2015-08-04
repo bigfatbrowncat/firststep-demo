@@ -58,23 +58,23 @@ public class DemoWindow extends Window {
 						lightFont = cnv.createFont("light", "ClearSans-Light.ttf");
 					}
 
-					float alphaDelta1 = (float)( 1.0 - 0.5 / timeSinceStartup);// Math.min(Math.sqrt(timeSinceStartup / 3), 1.0);
+					float alphaDelta1 = (float)( 1.0 - 0.5 / (Math.max(timeSinceStartup - 1.5, 0)));// Math.min(Math.sqrt(timeSinceStartup / 3), 1.0);
 
-					float delta1 = (float)( 1.0 + 0.02 / (timeSinceStartup - 1));
-					float delta2 = (float) Math.max(2.0 * (2.2 - timeSinceStartup), 1.0);
+					float delta1 = (float)( 1.0 + 0.05 / (Math.max(timeSinceStartup - 2, 0)));
+					float delta2 = (float)( 1.0 + 0.1 / (Math.max(timeSinceStartup - 2.5, 0)));
 					
-					cnv.fillColor(foreRed, foreGreen, foreBlue, 0.5f * alphaDelta1);
+					cnv.fillColor(foreRed, foreGreen, foreBlue, 0.9f * alphaDelta1);
 					cnv.beginPath();
 					cnv.fontFace("light");
 					cnv.fontSize(squareSize * (0.5f*alphaDelta1 + 1));
 					cnv.text(squareSize * (-0.1f), delta1 * squareSize * 0.95f, "1");
 					cnv.fill();
 
-					cnv.fillColor(foreRed, foreGreen, foreBlue, 0.8f * alphaDelta1);
+					cnv.fillColor(foreRed, foreGreen, foreBlue, 0.5f * alphaDelta1);
 					cnv.beginPath();
 					cnv.fontFace("regular");
 					cnv.fontSize(squareSize * 0.65f * (0.5f*alphaDelta1 + 1));
-					cnv.text(delta2 * squareSize * 0.35f, squareSize * 0.64f, "st");
+					cnv.text(delta2 * squareSize * 0.35f, squareSize * 0.70f, "st");
 					cnv.fill();
 				}
 			});
@@ -106,16 +106,11 @@ public class DemoWindow extends Window {
 				textFbPaint = cnv.imagePattern(xCenter - squareSize / 2, yCenter - squareSize / 2, squareSize, squareSize, 0, textFb.getImage(), 1.0f);
 				//fb2Paint = cnv.imagePattern(xCenter - squareSize / 2, yCenter - squareSize / 2, squareSize, squareSize, 0, fb2.getImage(), 1.0f);
 
-				//if (!animationsGroup.isActual(timeSinceStartup)) {
-				
 				cnv.fillPaint(textFbPaint);
 				cnv.beginPath();
+				cnv.strokeWidth(squareSize / 40);
 				cnv.roundedRect(xCenter - squareSize / 2, yCenter - squareSize / 2, squareSize, squareSize, cornerRadius);
 				cnv.fill();
-
-				//cnv.fillPaint(fb2Paint);
-				//cnv.fill();
-				//}
 				
 				roundRectAnimation = new RoundRectAnimation(0.0f, 2.0f, Aftermath.SAVE, xCenter - squareSize / 2, yCenter - squareSize / 2, squareSize, squareSize, cornerRadius);
 
