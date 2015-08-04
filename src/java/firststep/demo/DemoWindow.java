@@ -70,7 +70,7 @@ public class DemoWindow extends Window {
 	}
 	
 	public DemoWindow() {
-		super (APPNAME, 600, 400, new Color(backRed, backGreen, backBlue, 1.0f));
+		super (APPNAME, 600, 400, Color.fromRGBA(backRed, backGreen, backBlue, 1.0f));
 		startupMoment = System.currentTimeMillis();
 	}
 	

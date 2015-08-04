@@ -89,7 +89,7 @@ public class LogoController {
 				roundRectAnimation = new RoundRectAnimation(0.0f, 2.0f, Aftermath.SAVE, xCenter - logoSize / 2, yCenter - logoSize / 2, logoSize, logoSize, cornerRadius);
 
 				float alphaDelta = (float)( 1.0 - 0.5 * Math.pow(timeSinceStartup, -0.5));
-				cnv.strokeColor(new Color(foreRed, foreGreen, foreBlue, alphaDelta));
+				cnv.strokeColor(Color.fromRGBA(foreRed, foreGreen, foreBlue, alphaDelta));
 				roundRectAnimation.doFrame(cnv, 0.4f * timeSinceStartup * timeSinceStartup);
 
 			}
