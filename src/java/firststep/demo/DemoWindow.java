@@ -41,15 +41,15 @@ public class DemoWindow extends Window {
 		getMainFramebuffer().setDrawListener(new DrawListener() {
 			
 			float angleFunction(float time) {
-				return (float) (-0.05 + Math.exp(2 * time - 10));
+				return (float) (-0.3 + 0.21 * Math.atan(time));
 			}
 			
 			float zoomFunction(float time) {
-				return (float) (1 + Math.exp(2 * time - 10));
+				return (float) (1 + 0.2 * Math.atan(time - 2));
 			}
 			
 			float blendFunction(float time) {
-				return (float)( 1.0 - Math.pow(Math.max(time - 5.2, 0), 1.5));// Math.min(Math.sqrt(timeSinceStartup / 3), 1.0);
+				return (float)( 1.0 - Math.pow(Math.max(time - 7.7, 0), 1.5));// Math.min(Math.sqrt(timeSinceStartup / 3), 1.0);
 			}
 			
 			@Override
