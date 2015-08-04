@@ -1,17 +1,11 @@
 package firststep.demo;
 
 import firststep.Canvas;
-import firststep.Canvas.Winding;
 import firststep.Color;
-import firststep.Font;
-import firststep.Framebuffer;
 import firststep.Framebuffer.DrawListener;
-import firststep.Image;
 import firststep.Paint;
 import firststep.Transform;
 import firststep.Window;
-import firststep.demo.base.Animation.Aftermath;
-import firststep.demo.base.AnimationsGroup;
 
 public class DemoWindow extends Window {
 	
@@ -34,9 +28,10 @@ public class DemoWindow extends Window {
 	}
 	
 	@Override
-	protected void windowSize(int width, int height) {
+	protected void windowSize(final int width, final int height) {
 		
-		logoController = new LogoController(this);
+		float foreRed = 0.8f, foreGreen = 0.8f, foreBlue = 0.7f;
+		logoController = new LogoController(this, foreRed, foreGreen, foreBlue);
 		
 		getMainFramebuffer().setDrawListener(new DrawListener() {
 			
@@ -56,8 +51,8 @@ public class DemoWindow extends Window {
 			public void draw(Canvas cnv) {
 				float timeSinceStartup = getTimeSinceStartup();
 
-				float xCenter = width / 2;
-				float yCenter = height / 2;
+				final float xCenter = width / 2;
+				final float yCenter = height / 2;
 				
 				float logoPaintSize = logoController.getLogoFramebufferSize() / 2;
 

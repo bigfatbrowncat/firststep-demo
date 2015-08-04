@@ -4,29 +4,31 @@ import firststep.Canvas;
 import firststep.Color;
 import firststep.Font;
 import firststep.Framebuffer;
+import firststep.Framebuffer.DrawListener;
 import firststep.Image;
 import firststep.Paint;
 import firststep.Window;
-import firststep.Framebuffer.DrawListener;
-import firststep.demo.base.Animation;
 import firststep.demo.base.Animation.Aftermath;
 
 public class LogoController {
 
+	private Window window;
+	private Framebuffer logoFramebuffer;
+
 	private RoundRectAnimation roundRectAnimation;
-	private static float foreRed = 0.8f, foreGreen = 0.8f, foreBlue = 0.7f;
+
+	private int logoSize = 160;
+	private int logoFramebufferSize = (int)(logoSize * 1.05f);
+	private float cornerRadius = 30;
 	
-	private Framebuffer logoFb;
-
-	int logoSize = 160;
-	int logoFbSize = (int)(logoSize * 1.05f);
-
-	float cornerRadius = 30;
+	private float currentTime;
 	
-	float currentTime;
-
-	private void prepare(Window window) {
-		Framebuffer textFb = window.createFramebuffer(logoSize, logoSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+	private boolean isDeleted = false;
+	
+	public LogoController(Window window, final float foreRed, final float foreGreen, final float foreBlue) {
+		this.window = window;
+		
+		final Framebuffer textFb = window.createFramebuffer(logoSize, logoSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
 		textFb.setDrawListener(new DrawListener() {
 
 			private Font boldFont, regularFont, lightFont;
@@ -66,15 +68,15 @@ public class LogoController {
 			}
 		});
 			
-		logoFb = window.createFramebuffer((int)logoFbSize, (int)logoFbSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-		logoFb.addDependency(textFb);
-		logoFb.setDrawListener(new DrawListener() {
+		logoFramebuffer = window.createFramebuffer((int)logoFramebufferSize, (int)logoFramebufferSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+		logoFramebuffer.addDependency(textFb);
+		logoFramebuffer.setDrawListener(new DrawListener() {
 			@Override
 			public void draw(Canvas cnv) {
 				float timeSinceStartup = currentTime;
 				
-				float xCenter = logoFbSize / 2;
-				float yCenter = logoFbSize / 2;
+				float xCenter = logoFramebufferSize / 2;
+				float yCenter = logoFramebufferSize / 2;
 				
 				Paint textFbPaint = cnv.imagePattern(xCenter - logoSize / 2, yCenter - logoSize / 2, logoSize, logoSize, 0, textFb.getImage(), 1.0f);
 				
@@ -93,12 +95,20 @@ public class LogoController {
 			}
 		});
 
-		window.getMainFramebuffer().addDependency(logoFb);
-
+		window.getMainFramebuffer().addDependency(logoFramebuffer);
 	}
 	
-	public LogoController(Window window) {
-		prepare(window);
+	public void delete() {
+		if (!isDeleted) {
+			window.getMainFramebuffer().removeDependency(logoFramebuffer);
+			isDeleted = true;
+		}
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		delete();
+		super.finalize();
 	}
 	
 	public void setCurrentTime(float currentTime) {
@@ -106,11 +116,11 @@ public class LogoController {
 	}
 	
 	public Framebuffer getLogoFramebuffer() {
-		return logoFb;
+		return logoFramebuffer;
 	}
 	
 	public int getLogoFramebufferSize() {
-		return logoFbSize;
+		return logoFramebufferSize;
 	}
 	
 	public int getLogoSize() {

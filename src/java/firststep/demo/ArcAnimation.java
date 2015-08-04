@@ -3,7 +3,6 @@ package firststep.demo;
 import firststep.Canvas;
 import firststep.Canvas.Winding;
 import firststep.demo.base.Animation;
-import firststep.demo.base.Animation.Aftermath;
 
 public class ArcAnimation extends Animation {
 
