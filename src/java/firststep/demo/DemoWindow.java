@@ -31,7 +31,7 @@ public class DemoWindow extends Window {
 		public void draw(Canvas cnv) {
 			if (image == null) {
 				image = cnv.createImage("bg.png", Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-				bgPaint = cnv.imagePattern(0, 0, image.getSize().getX(), image.getSize().getY(), 0, image, 1.0f);
+				bgPaint = cnv.imagePattern(0, 0, image.getSize().getX(), image.getSize().getY(), 0, image, 0.3f);
 			}
 			
 			float timeSinceStartup = getTimeSinceStartup();
@@ -43,12 +43,14 @@ public class DemoWindow extends Window {
 
 			cnv.save();
 			cnv.setTransform(
-					Transform.rotating(angleFunction(timeSinceStartup))
+					Transform.rotating(-timeSinceStartup / 10)
+					.translate(getWidth() / 2, getHeight() / 2)
 			);
 
 			cnv.beginPath();
 			cnv.fillPaint(bgPaint);
-			cnv.rect(0, 0, getWidth(), getHeight());
+			int d = Math.max(getWidth(), getHeight());
+			cnv.rect(-d, -d, 2*d, 2*d);
 			cnv.fill();
 			cnv.restore();
 			
