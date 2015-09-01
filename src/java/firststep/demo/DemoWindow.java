@@ -3,6 +3,7 @@ package firststep.demo;
 import firststep.Canvas;
 import firststep.Color;
 import firststep.Framebuffer.DrawListener;
+import firststep.Image;
 import firststep.Paint;
 import firststep.Transform;
 import firststep.Window;
@@ -23,15 +24,36 @@ public class DemoWindow extends Window {
 			return (float)( 1.0 - Math.pow(Math.max(time - 7.7, 0), 1.5));// Math.min(Math.sqrt(timeSinceStartup / 3), 1.0);
 		}
 		
+		private Image image = null;
+		private Paint bgPaint = null;
+		
 		@Override
 		public void draw(Canvas cnv) {
+			if (image == null) {
+				image = cnv.createImage("bg.png", Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+				bgPaint = cnv.imagePattern(0, 0, image.getSize().getX(), image.getSize().getY(), 0, image, 1.0f);
+			}
+			
 			float timeSinceStartup = getTimeSinceStartup();
 
 			final float xCenter = DemoWindow.this.getWidth() / 2;
 			final float yCenter = DemoWindow.this.getHeight() / 2;
 			
-			float logoPaintSize = logoController.getLogoFramebufferSize() / 2;
+			float logoPaintSize = logoView.getLogoFramebufferSize() / 2;
 
+			cnv.save();
+			cnv.setTransform(
+					Transform.rotating(angleFunction(timeSinceStartup))
+			);
+
+			cnv.beginPath();
+			cnv.fillPaint(bgPaint);
+			cnv.rect(0, 0, getWidth(), getHeight());
+			cnv.fill();
+			cnv.restore();
+			
+
+			cnv.save();
 			cnv.setTransform(
 					Transform.rotating(angleFunction(timeSinceStartup))
 					.scale(zoomFunction(timeSinceStartup), 
@@ -39,11 +61,13 @@ public class DemoWindow extends Window {
 					zoomFunction(timeSinceStartup)
 			).translate(xCenter, yCenter));
 
-			Paint logoFbPaint = cnv.imagePattern(- logoPaintSize / 2, - logoPaintSize / 2, logoPaintSize, logoPaintSize, 0, logoController.getLogoFramebuffer().getImage(), blendFunction(timeSinceStartup));
+			Paint logoFbPaint = cnv.imagePattern(- logoPaintSize / 2, - logoPaintSize / 2, logoPaintSize, logoPaintSize, 0, logoView.getLogoFramebuffer().getImage(), blendFunction(timeSinceStartup));
 			cnv.beginPath();
 			cnv.fillPaint(logoFbPaint);
 			cnv.rect(- logoPaintSize / 2, - logoPaintSize / 2, logoPaintSize, logoPaintSize);
 			cnv.fill();
+			cnv.restore();
+
 		}
 	};
 	
@@ -52,7 +76,7 @@ public class DemoWindow extends Window {
 	private static float fps = 25.0f;
 	private static long startupMoment;
 	
-	private LogoController logoController;
+	private LogoView logoView;
 
 	private static float backRed = 0.15f, backGreen = 0.15f, backBlue = 0.1f;
 
@@ -64,14 +88,15 @@ public class DemoWindow extends Window {
 	
 	@Override
 	protected void beforeFrame() {
-		logoController.setCurrentTime(getTimeSinceStartup());	// ???
+		logoView.setCurrentTime(getTimeSinceStartup());	// ???
 	}
 	
 	@Override
 	protected void windowSize(final int width, final int height) {
 		
 		float foreRed = 0.8f, foreGreen = 0.8f, foreBlue = 0.7f;
-		logoController = new LogoController(this, foreRed, foreGreen, foreBlue);
+		logoView = new LogoView(this, foreRed, foreGreen, foreBlue);
+		
 		getMainFramebuffer().setDrawListener(mainDrawListener);
 	}
 	

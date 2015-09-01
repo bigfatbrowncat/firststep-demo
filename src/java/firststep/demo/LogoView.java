@@ -10,13 +10,15 @@ import firststep.Paint;
 import firststep.Window;
 import firststep.demo.base.Animation.Aftermath;
 
-public class LogoController {
+public class LogoView {
 
 	private Window window;
-	private Framebuffer logoFramebuffer;
 
 	private RoundRectAnimation roundRectAnimation;
 
+	private final Framebuffer oneStFramebuffer;
+	private Framebuffer logoFramebuffer;
+	
 	private int logoSize = 160;
 	private int logoFramebufferSize = (int)(logoSize * 1.05f);
 	private float cornerRadius = 30;
@@ -25,11 +27,11 @@ public class LogoController {
 	
 	private boolean isDeleted = false;
 	
-	public LogoController(Window window, final float foreRed, final float foreGreen, final float foreBlue) {
+	public LogoView(Window window, final float foreRed, final float foreGreen, final float foreBlue) {
 		this.window = window;
 		
-		final Framebuffer textFb = window.createFramebuffer(logoSize, logoSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-		textFb.setDrawListener(new DrawListener() {
+		oneStFramebuffer = window.createFramebuffer(logoSize, logoSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+		oneStFramebuffer.setDrawListener(new DrawListener() {
 
 			private Font boldFont, regularFont, lightFont;
 
@@ -69,7 +71,7 @@ public class LogoController {
 		});
 			
 		logoFramebuffer = window.createFramebuffer((int)logoFramebufferSize, (int)logoFramebufferSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-		logoFramebuffer.addDependency(textFb);
+		logoFramebuffer.addDependency(oneStFramebuffer);
 		logoFramebuffer.setDrawListener(new DrawListener() {
 			@Override
 			public void draw(Canvas cnv) {
@@ -78,7 +80,7 @@ public class LogoController {
 				float xCenter = logoFramebufferSize / 2;
 				float yCenter = logoFramebufferSize / 2;
 				
-				Paint textFbPaint = cnv.imagePattern(xCenter - logoSize / 2, yCenter - logoSize / 2, logoSize, logoSize, 0, textFb.getImage(), 1.0f);
+				Paint textFbPaint = cnv.imagePattern(xCenter - logoSize / 2, yCenter - logoSize / 2, logoSize, logoSize, 0, oneStFramebuffer.getImage(), 1.0f);
 				
 				cnv.fillPaint(textFbPaint);
 				cnv.strokeWidth(0.02f * logoSize);
