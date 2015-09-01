@@ -17,12 +17,12 @@ public class AnimationsGroup extends Animation {
 		super(startTime, duration, aftermath);
 	}
 	
-	public void addAnimation(Animation animator) {
-		animators.add(animator);
+	protected void addAnimation(Animation animation) {
+		animators.add(animation);
 	}
 	
-	public void removeAnimator(Animation animator) {
-		animators.remove(animator);
+	protected void removeAnimation(Animation animation) {
+		animators.remove(animation);
 	}
 	
 	public void clear() {

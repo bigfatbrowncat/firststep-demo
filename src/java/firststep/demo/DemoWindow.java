@@ -1,5 +1,8 @@
 package firststep.demo;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+
 import firststep.Canvas;
 import firststep.Color;
 import firststep.Framebuffer.DrawListener;
@@ -30,8 +33,13 @@ public class DemoWindow extends Window {
 		@Override
 		public void draw(Canvas cnv) {
 			if (image == null) {
-				image = cnv.createImage("bg.png", Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-				bgPaint = cnv.imagePattern(0, 0, image.getSize().getX(), image.getSize().getY(), 0, image, 0.3f);
+				BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/stars.png");
+				try {
+					image = cnv.createImageMem(is, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+					bgPaint = cnv.imagePattern(0, 0, image.getSize().getX(), image.getSize().getY(), 0, image, 0.3f);
+				} catch (IOException e) {
+					image = null;
+				}
 			}
 			
 			float timeSinceStartup = getTimeSinceStartup();
@@ -43,7 +51,7 @@ public class DemoWindow extends Window {
 
 			cnv.save();
 			cnv.setTransform(
-					Transform.rotating(-timeSinceStartup / 10)
+					Transform.rotating(-timeSinceStartup / 20)
 					.translate(getWidth() / 2, getHeight() / 2)
 			);
 
@@ -97,7 +105,9 @@ public class DemoWindow extends Window {
 	protected void windowSize(final int width, final int height) {
 		
 		float foreRed = 0.8f, foreGreen = 0.8f, foreBlue = 0.7f;
-		logoView = new LogoView(this, foreRed, foreGreen, foreBlue);
+		
+		//if (logoView != null) logoView.delete();
+		/*if (logoView == null)*/ logoView = new LogoView(this, foreRed, foreGreen, foreBlue);
 		
 		getMainFramebuffer().setDrawListener(mainDrawListener);
 	}

@@ -98,11 +98,15 @@ public class LogoView {
 		});
 
 		window.getMainFramebuffer().addDependency(logoFramebuffer);
+		
 	}
 	
 	public void delete() {
 		if (!isDeleted) {
+			logoFramebuffer.removeDependency(oneStFramebuffer);
+			oneStFramebuffer.delete();
 			window.getMainFramebuffer().removeDependency(logoFramebuffer);
+			logoFramebuffer.delete();
 			isDeleted = true;
 		}
 	}
