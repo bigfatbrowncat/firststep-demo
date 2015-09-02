@@ -35,7 +35,7 @@ public class DemoWindow extends Window {
 			if (image == null) {
 				BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/stars.png");
 				try {
-					image = cnv.createImageMem(is, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+					image = cnv.createImage(is, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
 					bgPaint = cnv.imagePattern(0, 0, image.getSize().getX(), image.getSize().getY(), 0, image, 0.3f);
 				} catch (IOException e) {
 					image = null;

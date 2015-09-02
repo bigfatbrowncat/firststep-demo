@@ -1,5 +1,8 @@
 package firststep.demo;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+
 import firststep.Canvas;
 import firststep.Color;
 import firststep.Font;
@@ -40,13 +43,28 @@ public class LogoView {
 				float timeSinceStartup = currentTime;
 				
 				if (boldFont == null) {
-					boldFont = cnv.createFont("bold", "ClearSans-Bold.ttf");
+					try {
+						BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/ClearSans-Bold.ttf");
+						boldFont = cnv.createOrFindFont("bold", is);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 				if (regularFont == null) {
-					regularFont = cnv.createFont("regular", "ClearSans-Regular.ttf");
+					try {
+						BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/ClearSans-Regular.ttf");
+						regularFont = cnv.createOrFindFont("regular", is);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 				if (lightFont == null) {
-					lightFont = cnv.createFont("light", "ClearSans-Light.ttf");
+					try {
+						BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/ClearSans-Light.ttf");
+						lightFont = cnv.createOrFindFont("light", is);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 
 				float alphaDelta1 = (float)( 1.0 - 0.5 / (Math.max(timeSinceStartup - 1.5, 0)));// Math.min(Math.sqrt(timeSinceStartup / 3), 1.0);
