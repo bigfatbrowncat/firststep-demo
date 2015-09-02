@@ -12,6 +12,8 @@ import firststep.demo.base.Animation.Aftermath;
 
 public class LogoView {
 
+	private static Font boldFont, regularFont, lightFont;
+
 	private Window window;
 
 	private RoundRectAnimation roundRectAnimation;
@@ -32,8 +34,6 @@ public class LogoView {
 		
 		oneStFramebuffer = window.createFramebuffer(logoSize, logoSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
 		oneStFramebuffer.setDrawListener(new DrawListener() {
-
-			private Font boldFont, regularFont, lightFont;
 
 			@Override
 			public void draw(Canvas cnv) {
@@ -103,10 +103,10 @@ public class LogoView {
 	
 	public void delete() {
 		if (!isDeleted) {
-			logoFramebuffer.removeDependency(oneStFramebuffer);
-			oneStFramebuffer.delete();
+			/*logoFramebuffer.removeDependency(oneStFramebuffer);*/
+			/*oneStFramebuffer.delete();*/
 			window.getMainFramebuffer().removeDependency(logoFramebuffer);
-			logoFramebuffer.delete();
+			/*logoFramebuffer.delete();*/
 			isDeleted = true;
 		}
 	}

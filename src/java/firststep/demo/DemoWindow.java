@@ -106,7 +106,7 @@ public class DemoWindow extends Window {
 		
 		float foreRed = 0.8f, foreGreen = 0.8f, foreBlue = 0.7f;
 		
-		//if (logoView != null) logoView.delete();
+		if (logoView != null) logoView.delete();
 		/*if (logoView == null)*/ logoView = new LogoView(this, foreRed, foreGreen, foreBlue);
 		
 		getMainFramebuffer().setDrawListener(mainDrawListener);
