@@ -3,9 +3,8 @@ package firststep.demo;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 
-import firststep.Canvas;
 import firststep.Color;
-import firststep.DrawingQueue;
+import firststep.Framebuffer;
 import firststep.Image;
 import firststep.Paint;
 import firststep.Transform;
@@ -27,9 +26,10 @@ public class DemoWindow extends Window {
 	}
 	
 	@Override
-	protected void beforeFrame(DrawingQueue queue) {
+	protected void beforeFrame() {
 		logoView.setCurrentTime(getTimeSinceStartup());	// ???
-		logoView.appendToQueue(queue);
+		logoView.draw();
+		draw();
 	}
 	
 	@Override
@@ -67,13 +67,15 @@ public class DemoWindow extends Window {
 	private Image image = null;
 	private Paint bgPaint = null;
 		
-	@Override
-	public void draw(Canvas cnv) {
+	public void draw() {
+		Framebuffer rootFb = getRootFramebuffer();
+		rootFb.beginDrawing();
+		
 		if (image == null) {
 			BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/stars.png");
 			try {
-				image = cnv.createImage(is, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-				bgPaint = cnv.imagePattern(0, 0, image.getSize().getX(), image.getSize().getY(), 0, image, 0.3f);
+				image = rootFb.createImage(is, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+				bgPaint = rootFb.imagePattern(0, 0, image.getSize().getX(), image.getSize().getY(), 0, image, 0.3f);
 			} catch (IOException e) {
 				image = null;
 			}
@@ -86,34 +88,34 @@ public class DemoWindow extends Window {
 		
 		float logoPaintSize = logoView.getImage().getSize().getX() / 2;
 
-		cnv.save();
-		cnv.setTransform(
+		rootFb.save();
+		rootFb.setTransform(
 				Transform.rotating(-timeSinceStartup / 20)
 				.translate(getWidth() / 2, getHeight() / 2)
 		);
 
-		cnv.beginPath();
-		cnv.fillPaint(bgPaint);
+		rootFb.beginPath();
+		rootFb.fillPaint(bgPaint);
 		int d = Math.max(getWidth(), getHeight());
-		cnv.rect(-d, -d, 2*d, 2*d);
-		cnv.fill();
-		cnv.restore();
+		rootFb.rect(-d, -d, 2*d, 2*d);
+		rootFb.fill();
+		rootFb.restore();
 		
 
-		cnv.save();
-		cnv.setTransform(
+		rootFb.save();
+		rootFb.setTransform(
 				Transform.rotating(angleFunction(timeSinceStartup))
 				.scale(zoomFunction(timeSinceStartup), 
-				
 				zoomFunction(timeSinceStartup)
 		).translate(xCenter, yCenter));
 
-		Paint logoFbPaint = cnv.imagePattern(- logoPaintSize / 2, - logoPaintSize / 2, logoPaintSize, logoPaintSize, 0, logoView.getImage(), blendFunction(timeSinceStartup));
-		cnv.beginPath();
-		cnv.fillPaint(logoFbPaint);
-		cnv.rect(- logoPaintSize / 2, - logoPaintSize / 2, logoPaintSize, logoPaintSize);
-		cnv.fill();
-		cnv.restore();
+		Paint logoFbPaint = rootFb.imagePattern(- logoPaintSize / 2, - logoPaintSize / 2, logoPaintSize, logoPaintSize, 0, logoView.getImage(), blendFunction(timeSinceStartup));
+		rootFb.beginPath();
+		rootFb.fillPaint(logoFbPaint);
+		rootFb.rect(- logoPaintSize / 2, - logoPaintSize / 2, logoPaintSize, logoPaintSize);
+		rootFb.fill();
+		rootFb.restore();
 
+		rootFb.endDrawing();
 	}
 }
