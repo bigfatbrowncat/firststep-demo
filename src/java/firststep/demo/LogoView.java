@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import firststep.Canvas;
 import firststep.Color;
+import firststep.DrawingQueue;
 import firststep.Font;
 import firststep.Framebuffer;
 import firststep.Framebuffer.DrawListener;
@@ -17,8 +18,6 @@ public class LogoView {
 
 	private static Font boldFont, regularFont, lightFont;
 
-	private Window window;
-
 	private RoundRectAnimation roundRectAnimation;
 
 	private final Framebuffer oneStFramebuffer;
@@ -30,11 +29,7 @@ public class LogoView {
 	
 	private float currentTime;
 	
-	private boolean isDeleted = false;
-	
 	public LogoView(Window window, final float foreRed, final float foreGreen, final float foreBlue) {
-		this.window = window;
-		
 		oneStFramebuffer = window.createFramebuffer(logoSize, logoSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
 		oneStFramebuffer.setDrawListener(new DrawListener() {
 
@@ -89,7 +84,6 @@ public class LogoView {
 		});
 			
 		logoFramebuffer = window.createFramebuffer((int)logoFramebufferSize, (int)logoFramebufferSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-		logoFramebuffer.addDependency(oneStFramebuffer);
 		logoFramebuffer.setDrawListener(new DrawListener() {
 			@Override
 			public void draw(Canvas cnv) {
@@ -114,40 +108,18 @@ public class LogoView {
 
 			}
 		});
+	}
 
-		window.getMainFramebuffer().addDependency(logoFramebuffer);
-		
-	}
-	
-	public void delete() {
-		if (!isDeleted) {
-			/*logoFramebuffer.removeDependency(oneStFramebuffer);*/
-			/*oneStFramebuffer.delete();*/
-			window.getMainFramebuffer().removeDependency(logoFramebuffer);
-			/*logoFramebuffer.delete();*/
-			isDeleted = true;
-		}
-	}
-	
-	@Override
-	protected void finalize() throws Throwable {
-		delete();
-		super.finalize();
+	public void appendToQueue(DrawingQueue queue) {
+		queue.append(oneStFramebuffer);
+		queue.append(logoFramebuffer);
 	}
 	
 	public void setCurrentTime(float currentTime) {
 		this.currentTime = currentTime;
 	}
 	
-	public Framebuffer getLogoFramebuffer() {
-		return logoFramebuffer;
-	}
-	
-	public int getLogoFramebufferSize() {
-		return logoFramebufferSize;
-	}
-	
-	public int getLogoSize() {
-		return logoSize;
+	public Image getImage() {
+		return logoFramebuffer.getImage();
 	}
 }
