@@ -1,6 +1,7 @@
 package firststep.demo;
 
 import firststep.Canvas;
+import firststep.Framebuffer;
 import firststep.demo.base.Animation;
 
 public class LineAnimation extends Animation {
@@ -28,12 +29,12 @@ public class LineAnimation extends Animation {
 	}
 	
 	@Override
-	protected void frame(Canvas cnv, float timeSinceStart) {
+	protected void frame(Framebuffer fb, float timeSinceStart) {
 		float xc = (x2 - x1) * timeSinceStart / getDuration() + x1;
 		float yc = (y2 - y1) * timeSinceStart / getDuration() + y1;
-		cnv.beginPath();
-		cnv.moveTo(x1, y1);
-		cnv.lineTo(xc, yc);
-		cnv.stroke();
+		fb.beginPath();
+		fb.moveTo(x1, y1);
+		fb.lineTo(xc, yc);
+		fb.stroke();
 	}
 }

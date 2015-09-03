@@ -8,37 +8,47 @@ import firststep.Font;
 import firststep.Framebuffer;
 import firststep.Image;
 import firststep.Paint;
-import firststep.Window;
-import firststep.demo.base.Animation.Aftermath;
+import firststep.Transform;
+import firststep.demo.base.Animation;
 
-public class LogoView {
+public class LogoView extends Animation {
 
+	private static final float DURATION = 10;
+	
 	private static Font boldFont, regularFont, lightFont;
 
 	private RoundRectAnimation roundRectAnimation;
 
-	private final Framebuffer oneStFramebuffer;
+	private Framebuffer oneStFramebuffer;
 	private Framebuffer logoFramebuffer;
 	
 	private int logoSize = 160;
 	private int logoFramebufferSize = (int)(logoSize * 1.05f);
 	private float cornerRadius = 30;
 
-	private final float foreRed, foreGreen, foreBlue;
+	private float foreRed, foreGreen, foreBlue;
+	private int width, height;
 	
-	private float currentTime;
-	
-	public LogoView(Window window, final float foreRed, final float foreGreen, final float foreBlue) {
+	private void init(final float foreRed, final float foreGreen, final float foreBlue) {
 		this.foreRed = foreRed;
 		this.foreGreen = foreGreen;
 		this.foreBlue = foreBlue;
 		
-		oneStFramebuffer = window.createFramebuffer(logoSize, logoSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
-		logoFramebuffer = window.createFramebuffer((int)logoFramebufferSize, (int)logoFramebufferSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+		oneStFramebuffer = new Framebuffer(logoSize, logoSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+		logoFramebuffer = new Framebuffer((int)logoFramebufferSize, (int)logoFramebufferSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+	}
+	
+	public LogoView(Animation previous, final float foreRed, final float foreGreen, final float foreBlue) {
+		super(previous, DURATION, Aftermath.REMOVE);
+		init(foreRed, foreGreen, foreBlue);
 	}
 
-	private void drawOneSt() {
-		float timeSinceStartup = currentTime;
+	public LogoView(float startTime, final float foreRed, final float foreGreen, final float foreBlue) {
+		super(startTime, DURATION, Aftermath.REMOVE);
+		init(foreRed, foreGreen, foreBlue);
+	}
+
+	private void drawOneSt(float timeSinceStart) {
 		oneStFramebuffer.beginDrawing();
 
 		if (boldFont == null) {
@@ -66,10 +76,10 @@ public class LogoView {
 			}
 		}
 
-		float alphaDelta1 = (float)( 1.0 - 0.5 / (Math.max(timeSinceStartup - 1.5, 0)));// Math.min(Math.sqrt(timeSinceStartup / 3), 1.0);
+		float alphaDelta1 = (float)( 1.0 - 0.5 / (Math.max(timeSinceStart - 1.5, 0)));// Math.min(Math.sqrt(timeSinceStartup / 3), 1.0);
 
-		float delta1 = (float)( 1.0 + 0.05 / (Math.max(timeSinceStartup - 2, 0)));
-		float delta2 = (float)( 1.0 + 0.1 / (Math.max(timeSinceStartup - 2.5, 0)));
+		float delta1 = (float)( 1.0 + 0.05 / (Math.max(timeSinceStart - 2, 0)));
+		float delta2 = (float)( 1.0 + 0.1 / (Math.max(timeSinceStart - 2.5, 0)));
 		
 		oneStFramebuffer.fillColor(foreRed, foreGreen, foreBlue, 0.9f * alphaDelta1);
 		oneStFramebuffer.beginPath();
@@ -88,10 +98,8 @@ public class LogoView {
 		oneStFramebuffer.endDrawing();
 	}
 	
-	private void drawLogo() {
+	private void drawLogo(float timeSinceStart) {
 		logoFramebuffer.beginDrawing();
-		
-		float timeSinceStartup = currentTime;
 		
 		float xCenter = logoFramebufferSize / 2;
 		float yCenter = logoFramebufferSize / 2;
@@ -106,23 +114,99 @@ public class LogoView {
 		
 		roundRectAnimation = new RoundRectAnimation(0.0f, 2.0f, Aftermath.SAVE, xCenter - logoSize / 2, yCenter - logoSize / 2, logoSize, logoSize, cornerRadius);
 
-		float alphaDelta = (float)( 1.0 - 0.5 * Math.pow(timeSinceStartup, -0.5));
+		float alphaDelta = (float)( 1.0 - 0.5 * Math.pow(timeSinceStart, -0.5));
 		logoFramebuffer.strokeColor(Color.fromRGBA(foreRed, foreGreen, foreBlue, alphaDelta));
-		roundRectAnimation.doFrame(logoFramebuffer, 0.4f * timeSinceStartup * timeSinceStartup);
+		roundRectAnimation.doFrame(logoFramebuffer, 0.4f * timeSinceStart * timeSinceStart);
 
 		logoFramebuffer.endDrawing();
 	}
 	
-	public void draw() {
-		drawOneSt();
-		drawLogo();
-	}
-
-	public void setCurrentTime(float currentTime) {
-		this.currentTime = currentTime;
+	float angleFunction(float time) {
+		return (float) (-0.3 + 0.21 * Math.atan(time));
 	}
 	
+	float zoomFunction(float time) {
+		return (float) (1 + 0.2 * Math.atan(time - 2));
+	}
+	
+	float blendFunction(float time) {
+		return (float)( 1.0 - Math.pow(Math.max(time - 7.7, 0), 1.5));// Math.min(Math.sqrt(timeSinceStartup / 3), 1.0);
+	}
+	
+	private Image image = null;
+	private Paint bgPaint = null;
+		
+	private void drawMain(Framebuffer rootFb, float timeSinceStartup, int width, int height) {
+		rootFb.beginDrawing();
+		
+		if (image == null) {
+			BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/stars.png");
+			try {
+				image = rootFb.createImage(is, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+				bgPaint = rootFb.imagePattern(0, 0, image.getSize().getX(), image.getSize().getY(), 0, image, 0.3f);
+			} catch (IOException e) {
+				image = null;
+			}
+		}
+		
+		final float xCenter = width / 2;
+		final float yCenter = height / 2;
+		
+		float logoPaintSize = logoFramebuffer.getImage().getSize().getX() / 2;
+
+		rootFb.save();
+		rootFb.setTransform(
+				Transform.rotating(-timeSinceStartup / 20)
+				.translate(width / 2, height / 2)
+		);
+
+		rootFb.beginPath();
+		rootFb.fillPaint(bgPaint);
+		int d = Math.max(width, height);
+		rootFb.rect(-d, -d, 2*d, 2*d);
+		rootFb.fill();
+		rootFb.restore();
+		
+
+		rootFb.save();
+		rootFb.setTransform(
+				Transform.rotating(angleFunction(timeSinceStartup))
+				.scale(zoomFunction(timeSinceStartup), 
+				zoomFunction(timeSinceStartup)
+		).translate(xCenter, yCenter));
+
+		Paint logoFbPaint = rootFb.imagePattern(- logoPaintSize / 2, - logoPaintSize / 2, 
+				logoPaintSize, logoPaintSize, 
+				0, 
+				logoFramebuffer.getImage(), 
+				blendFunction(timeSinceStartup)
+		);
+		rootFb.beginPath();
+		rootFb.fillPaint(logoFbPaint);
+		rootFb.rect(- logoPaintSize / 2, - logoPaintSize / 2, logoPaintSize, logoPaintSize);
+		rootFb.fill();
+		rootFb.restore();
+		
+		rootFb.endDrawing();
+	}
+
 	public Image getImage() {
 		return logoFramebuffer.getImage();
 	}
+
+	public void setSize(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+	
+	@Override
+	protected void frame(Framebuffer fb, float timeSinceStart) {
+		if (timeSinceStart >= 0 && timeSinceStart < this.getDuration()) {
+			drawOneSt(timeSinceStart);
+			drawLogo(timeSinceStart);
+			drawMain(fb, timeSinceStart, width, height);
+		}
+	}
 }
+
+	

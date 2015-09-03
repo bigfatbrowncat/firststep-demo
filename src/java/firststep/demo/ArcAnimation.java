@@ -2,6 +2,7 @@ package firststep.demo;
 
 import firststep.Canvas;
 import firststep.Canvas.Winding;
+import firststep.Framebuffer;
 import firststep.demo.base.Animation;
 
 public class ArcAnimation extends Animation {
@@ -35,13 +36,13 @@ public class ArcAnimation extends Animation {
 	
 	
 	@Override
-	protected void frame(Canvas cnv, float timeSinceStart) {
+	protected void frame(Framebuffer fb, float timeSinceStart) {
 		while (a0 < 0) a0 += 2 * Math.PI;
 		while (a1 < a0) a1 += 2 * Math.PI;
 		
 		float ac = (a1 - a0) * timeSinceStart / getDuration() + a0;
-		cnv.beginPath();
-		cnv.arc(cx, cy, radius, a0, ac, dir);
-		cnv.stroke();
+		fb.beginPath();
+		fb.arc(cx, cy, radius, a0, ac, dir);
+		fb.stroke();
 	}
 }

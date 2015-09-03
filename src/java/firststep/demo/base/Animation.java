@@ -1,6 +1,6 @@
 package firststep.demo.base;
 
-import firststep.Canvas;
+import firststep.Framebuffer;
 
 public abstract class Animation {
 	public enum Aftermath {
@@ -10,10 +10,10 @@ public abstract class Animation {
 	private float startTime, duration;
 	private Aftermath aftermath;
 	
-	public void doFrame(Canvas cnv, float currentTime) {
+	public void doFrame(Framebuffer fb, float currentTime) {
 		if (currentTime > startTime) {
 			if (currentTime < startTime + duration || aftermath == Aftermath.SAVE) {
-				frame(cnv, Math.min(currentTime - startTime, duration));
+				frame(fb, Math.min(currentTime - startTime, duration));
 			}
 		}
 	}
@@ -22,7 +22,7 @@ public abstract class Animation {
 		return currentTime < startTime + duration;
 	}
 	
-	protected abstract void frame(Canvas cnv, float timeSinceStart);
+	protected abstract void frame(Framebuffer fb, float timeSinceStart);
 	
 	public Animation(float startTime, float duration, Aftermath aftermath) {
 		this.startTime = startTime;
