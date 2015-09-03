@@ -3,6 +3,7 @@ package firststep.demo;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 
+import firststep.Canvas;
 import firststep.Color;
 import firststep.Font;
 import firststep.Framebuffer;
@@ -11,7 +12,7 @@ import firststep.Paint;
 import firststep.Transform;
 import firststep.demo.base.Animation;
 
-public class LogoView extends Animation {
+public class LogoAnimation extends Animation {
 
 	private static final float DURATION = 10;
 	
@@ -38,16 +39,17 @@ public class LogoView extends Animation {
 		logoFramebuffer = new Framebuffer((int)logoFramebufferSize, (int)logoFramebufferSize, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
 	}
 	
-	public LogoView(Animation previous, final float foreRed, final float foreGreen, final float foreBlue) {
+	public LogoAnimation(Animation previous, final float foreRed, final float foreGreen, final float foreBlue) {
 		super(previous, DURATION, Aftermath.REMOVE);
 		init(foreRed, foreGreen, foreBlue);
 	}
 
-	public LogoView(float startTime, final float foreRed, final float foreGreen, final float foreBlue) {
+	public LogoAnimation(float startTime, final float foreRed, final float foreGreen, final float foreBlue) {
 		super(startTime, DURATION, Aftermath.REMOVE);
 		init(foreRed, foreGreen, foreBlue);
 	}
 
+	
 	private void drawOneSt(float timeSinceStart) {
 		oneStFramebuffer.beginDrawing();
 
@@ -121,24 +123,22 @@ public class LogoView extends Animation {
 		logoFramebuffer.endDrawing();
 	}
 	
-	float angleFunction(float time) {
+	private float angleFunction(float time) {
 		return (float) (-0.3 + 0.21 * Math.atan(time));
 	}
 	
-	float zoomFunction(float time) {
+	private float zoomFunction(float time) {
 		return (float) (1 + 0.2 * Math.atan(time - 2));
 	}
 	
-	float blendFunction(float time) {
+	private float blendFunction(float time) {
 		return (float)( 1.0 - Math.pow(Math.max(time - 7.7, 0), 1.5));// Math.min(Math.sqrt(timeSinceStartup / 3), 1.0);
 	}
 	
 	private Image image = null;
 	private Paint bgPaint = null;
 		
-	private void drawMain(Framebuffer rootFb, float timeSinceStartup, int width, int height) {
-		rootFb.beginDrawing();
-		
+	private void drawMain(Canvas rootFb, float timeSinceStartup, int width, int height) {
 		if (image == null) {
 			BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/stars.png");
 			try {
@@ -186,8 +186,6 @@ public class LogoView extends Animation {
 		rootFb.rect(- logoPaintSize / 2, - logoPaintSize / 2, logoPaintSize, logoPaintSize);
 		rootFb.fill();
 		rootFb.restore();
-		
-		rootFb.endDrawing();
 	}
 
 	public Image getImage() {
@@ -200,7 +198,7 @@ public class LogoView extends Animation {
 	}
 	
 	@Override
-	protected void frame(Framebuffer fb, float timeSinceStart) {
+	protected void frame(Canvas fb, float timeSinceStart) {
 		if (timeSinceStart >= 0 && timeSinceStart < this.getDuration()) {
 			drawOneSt(timeSinceStart);
 			drawLogo(timeSinceStart);

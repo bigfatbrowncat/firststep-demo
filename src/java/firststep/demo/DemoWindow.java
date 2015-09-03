@@ -10,7 +10,7 @@ public class DemoWindow extends Window {
 	private static float fps = 25.0f;
 	private static long startupMoment;
 	
-	private LogoView logoView;
+	private LogoAnimation logoView;
 
 	private static float backRed = 0.15f, backGreen = 0.15f, backBlue = 0.1f;
 
@@ -20,21 +20,22 @@ public class DemoWindow extends Window {
 	
 	@Override
 	protected void frame() {
-		if (logoView.isActual(getTimeSinceStartup())) {
+		float foreRed = 0.8f, foreGreen = 0.8f, foreBlue = 0.7f;
+
+		logoView = new LogoAnimation(0.0f, foreRed, foreGreen, foreBlue);
+		logoView.setSize(getWidth(), getHeight());
+		
+		//if (logoView.isActual(getTimeSinceStartup())) {
 			logoView.doFrame(getRootFramebuffer(), getTimeSinceStartup());
-		} else {
-			getRootFramebuffer().beginDrawing();
-			getRootFramebuffer().endDrawing();
-		}
+		//}
 	}
 	
 	@Override
 	protected void windowSize(final int width, final int height) {
 		
-		float foreRed = 0.8f, foreGreen = 0.8f, foreBlue = 0.7f;
 		
-		/*if (logoView == null)*/ logoView = new LogoView(0.0f, foreRed, foreGreen, foreBlue);
-		logoView.setSize(width, height);
+		/*if (logoView == null)*/ 
+		//logoView.setSize(width, height);
 	}
 	
 	public DemoWindow() {

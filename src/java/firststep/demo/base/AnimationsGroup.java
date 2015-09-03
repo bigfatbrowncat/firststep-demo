@@ -31,7 +31,7 @@ public class AnimationsGroup extends Animation {
 	}
 
 	@Override
-	protected void frame(Framebuffer fb, float timeSinceStart) {
+	protected void frame(Canvas fb, float timeSinceStart) {
 		LinkedList<Animation> obsoletes = new LinkedList<Animation>();
 		for (Animation anim : animators) {
 			anim.doFrame(fb, timeSinceStart);
