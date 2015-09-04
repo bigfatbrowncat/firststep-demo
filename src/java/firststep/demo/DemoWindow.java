@@ -19,7 +19,7 @@ public class DemoWindow extends Window {
 	}
 	
 	@Override
-	protected void frame() {
+	protected void onFrame() {
 		float foreRed = 0.8f, foreGreen = 0.8f, foreBlue = 0.7f;
 
 		logoView = new LogoAnimation(0.0f, foreRed, foreGreen, foreBlue);
@@ -31,7 +31,7 @@ public class DemoWindow extends Window {
 	}
 	
 	@Override
-	protected void windowSize(final int width, final int height) {
+	protected void onSizeChange(final int width, final int height) {
 		
 		
 		/*if (logoView == null)*/ 
