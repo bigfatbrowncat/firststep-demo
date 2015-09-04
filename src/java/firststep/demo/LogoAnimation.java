@@ -56,7 +56,7 @@ public class LogoAnimation extends Animation {
 		if (boldFont == null) {
 			try {
 				BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/ClearSans-Bold.ttf");
-				boldFont = oneStFramebuffer.createOrFindFont("bold", is);
+				boldFont = Font.createOrFindFont("bold", is);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -64,7 +64,7 @@ public class LogoAnimation extends Animation {
 		if (regularFont == null) {
 			try {
 				BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/ClearSans-Regular.ttf");
-				regularFont = oneStFramebuffer.createOrFindFont("regular", is);
+				regularFont = Font.createOrFindFont("regular", is);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -72,7 +72,7 @@ public class LogoAnimation extends Animation {
 		if (lightFont == null) {
 			try {
 				BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/ClearSans-Light.ttf");
-				lightFont = oneStFramebuffer.createOrFindFont("light", is);
+				lightFont = Font.createOrFindFont("light", is);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -142,7 +142,7 @@ public class LogoAnimation extends Animation {
 		if (image == null) {
 			BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/stars.png");
 			try {
-				image = rootFb.createImage(is, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+				image = new Image(is, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
 				bgPaint = rootFb.imagePattern(0, 0, image.getSize().getX(), image.getSize().getY(), 0, image, 0.3f);
 			} catch (IOException e) {
 				image = null;
