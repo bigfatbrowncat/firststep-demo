@@ -3,7 +3,6 @@ package firststep.demo.base;
 import java.util.LinkedList;
 
 import firststep.Canvas;
-import firststep.Framebuffer;
 
 public class AnimationsGroup extends Animation {
 

@@ -1,7 +1,6 @@
 package firststep.demo.base;
 
 import firststep.Canvas;
-import firststep.Framebuffer;
 
 public abstract class Animation {
 	public enum Aftermath {
