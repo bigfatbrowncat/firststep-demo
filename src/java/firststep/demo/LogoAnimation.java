@@ -2,6 +2,7 @@ package firststep.demo;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import firststep.Canvas;
 import firststep.Color;
@@ -55,7 +56,7 @@ public class LogoAnimation extends Animation {
 
 		if (boldFont == null) {
 			try {
-				BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/ClearSans-Bold.ttf");
+				InputStream is = this.getClass().getResourceAsStream("/firststep/demo/ClearSans-Bold.ttf");
 				boldFont = Font.createOrFindFont("bold", is);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -63,7 +64,7 @@ public class LogoAnimation extends Animation {
 		}
 		if (regularFont == null) {
 			try {
-				BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/ClearSans-Regular.ttf");
+				InputStream is = this.getClass().getResourceAsStream("/firststep/demo/ClearSans-Regular.ttf");
 				regularFont = Font.createOrFindFont("regular", is);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -71,7 +72,7 @@ public class LogoAnimation extends Animation {
 		}
 		if (lightFont == null) {
 			try {
-				BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/ClearSans-Light.ttf");
+				InputStream is = this.getClass().getResourceAsStream("/firststep/demo/ClearSans-Light.ttf");
 				lightFont = Font.createOrFindFont("light", is);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -140,7 +141,7 @@ public class LogoAnimation extends Animation {
 		
 	private void drawMain(Canvas rootFb, float timeSinceStartup, int width, int height) {
 		if (image == null) {
-			BufferedInputStream is = (BufferedInputStream)this.getClass().getResourceAsStream("/firststep/demo/stars.png");
+			InputStream is = this.getClass().getResourceAsStream("/firststep/demo/stars.png");
 			try {
 				image = new Image(is, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
 				bgPaint = rootFb.imagePattern(0, 0, image.getSize().getX(), image.getSize().getY(), 0, image, 0.3f);
