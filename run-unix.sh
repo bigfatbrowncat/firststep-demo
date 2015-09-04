@@ -1,0 +1,1 @@
+"$1" -cp "firststep-demo.jar:firststep/firststep-java.jar" -Djava.library.path=firststep/ firststep.demo.DemoWindow
