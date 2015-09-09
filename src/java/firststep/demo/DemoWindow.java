@@ -26,7 +26,7 @@ public class DemoWindow extends Window {
 		logoView.setSize(getWidth(), getHeight());
 		
 		//if (logoView.isActual(getTimeSinceStartup())) {
-			logoView.doFrame(getRootFramebuffer(), getTimeSinceStartup());
+			logoView.doFrame(this, getTimeSinceStartup());
 		//}
 	}
 	
