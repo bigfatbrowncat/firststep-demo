@@ -118,7 +118,8 @@ public class LogoAnimation extends Animation {
 
 		float alphaDelta = (float)( 1.0 - 0.5 * Math.pow(timeSinceStart, -0.5));
 		logoFramebuffer.strokeColor(Color.fromRGBA(foreRed, foreGreen, foreBlue, alphaDelta));
-		roundRectAnimation.doFrame(logoFramebuffer, 0.4f * timeSinceStart * timeSinceStart);
+		roundRectAnimation.setCurrentTime(0.4f * timeSinceStart * timeSinceStart);
+		roundRectAnimation.render(logoFramebuffer);
 
 		logoFramebuffer.endDrawing();
 	}
@@ -145,6 +146,7 @@ public class LogoAnimation extends Animation {
 				image = new Image(is, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
 				bgPaint = rootFb.imagePattern(0, 0, image.getSize().getX(), image.getSize().getY(), 0, image, 0.3f);
 			} catch (IOException e) {
+				e.printStackTrace();
 				image = null;
 			}
 		}
@@ -155,8 +157,7 @@ public class LogoAnimation extends Animation {
 		float logoPaintSize = logoFramebuffer.getImage().getSize().getX() / 2;
 
 		rootFb.save();
-		rootFb.setTransform(
-				Transform.rotating(-timeSinceStartup / 20)
+		rootFb.setTransform(rootFb.getTransform().rotate(-timeSinceStartup / 20)
 				.translate(width / 2, height / 2)
 		);
 
@@ -198,7 +199,7 @@ public class LogoAnimation extends Animation {
 	}
 	
 	@Override
-	protected void frame(Canvas fb, float timeSinceStart) {
+	protected void frame(Framebuffer fb, float timeSinceStart) {
 		if (timeSinceStart >= 0 && timeSinceStart < this.getDuration()) {
 			drawOneSt(timeSinceStart);
 			drawLogo(timeSinceStart);

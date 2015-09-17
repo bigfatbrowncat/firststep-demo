@@ -3,6 +3,7 @@ package firststep.demo.base;
 import java.util.LinkedList;
 
 import firststep.Canvas;
+import firststep.Framebuffer;
 
 public class AnimationsGroup extends Animation {
 
@@ -30,10 +31,11 @@ public class AnimationsGroup extends Animation {
 	}
 
 	@Override
-	protected void frame(Canvas fb, float timeSinceStart) {
+	protected void frame(Framebuffer fb, float timeSinceStart) {
 		LinkedList<Animation> obsoletes = new LinkedList<Animation>();
 		for (Animation anim : animators) {
-			anim.doFrame(fb, timeSinceStart);
+			anim.setCurrentTime(timeSinceStart);
+			anim.render(fb);
 			if (!anim.isActual(timeSinceStart) && anim.getAftermath() == Aftermath.REMOVE) {
 				obsoletes.add(anim);
 			}

@@ -1,6 +1,7 @@
 package firststep.demo;
 
 import firststep.Canvas;
+import firststep.Framebuffer;
 import firststep.demo.base.Animation;
 
 public class LineAnimation extends Animation {
@@ -28,7 +29,7 @@ public class LineAnimation extends Animation {
 	}
 	
 	@Override
-	protected void frame(Canvas fb, float timeSinceStart) {
+	protected void frame(Framebuffer fb, float timeSinceStart) {
 		float xc = (x2 - x1) * timeSinceStart / getDuration() + x1;
 		float yc = (y2 - y1) * timeSinceStart / getDuration() + y1;
 		fb.beginPath();

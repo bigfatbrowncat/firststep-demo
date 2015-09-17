@@ -1,16 +1,18 @@
 package firststep.demo.base;
 
-import firststep.Canvas;
+import firststep.Framebuffer;
+import firststep.contracts.Animatable;
 
-public abstract class Animation {
+public abstract class Animation implements Animatable {
 	public enum Aftermath {
 		SAVE, REMOVE
 	}
 
 	private float startTime, duration;
+	private float currentTime;
 	private Aftermath aftermath;
 	
-	public void doFrame(Canvas fb, float currentTime) {
+	public void render(Framebuffer fb) {
 		if (currentTime > startTime) {
 			if (currentTime < startTime + duration || aftermath == Aftermath.SAVE) {
 				frame(fb, Math.min(currentTime - startTime, duration));
@@ -18,11 +20,17 @@ public abstract class Animation {
 		}
 	}
 	
+	@Override
+	public void setCurrentTime(float time) {
+		this.currentTime = time;
+	}
+	
 	public boolean isActual(float currentTime) {
 		return currentTime < startTime + duration;
 	}
 	
-	protected abstract void frame(Canvas fb, float timeSinceStart);
+	
+	protected abstract void frame(Framebuffer fb, float currentTime);
 	
 	public Animation(float startTime, float duration, Aftermath aftermath) {
 		this.startTime = startTime;
@@ -44,7 +52,8 @@ public abstract class Animation {
 		return startTime;
 	}
 	
-	public float getDuration() {
+	@Override
+	public Float getDuration() {
 		return duration;
 	}
 	

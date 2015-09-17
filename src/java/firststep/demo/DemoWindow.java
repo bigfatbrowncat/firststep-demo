@@ -1,7 +1,12 @@
 package firststep.demo;
 
 import firststep.Color;
+import firststep.Framebuffer;
+import firststep.Transform;
 import firststep.Window;
+import firststep.contracts.Animatable;
+import firststep.contracts.Renderable;
+import firststep.demo.base.Animation;
 
 public class DemoWindow extends Window {
 
@@ -18,16 +23,32 @@ public class DemoWindow extends Window {
 		return (float)((double)System.currentTimeMillis() - startupMoment) / 1000;
 	}
 	
+	static float foreRed = 0.8f, foreGreen = 0.8f, foreBlue = 0.7f;
+	public static class TestLogoAnimation extends LogoAnimation {
+		public TestLogoAnimation() {
+			//super(0, 10, Aftermath.SAVE, 10, 10, 50, 30, 8);
+			super(0, 1, 1, 1);
+		}
+		
+		@Override
+		public void render(Framebuffer fb) {
+			//fb.setTransform(Transform.translating(100, 0));
+			//fb.save();
+			setSize(fb.getWidth(), fb.getHeight());
+			super.render(fb);
+			//fb.restore();
+		}
+		
+	}
+	
 	@Override
 	protected void onFrame() {
-		float foreRed = 0.8f, foreGreen = 0.8f, foreBlue = 0.7f;
 
 		logoView = new LogoAnimation(0.0f, foreRed, foreGreen, foreBlue);
 		logoView.setSize(getWidth(), getHeight());
-		
-		//if (logoView.isActual(getTimeSinceStartup())) {
-			logoView.doFrame(this, getTimeSinceStartup());
-		//}
+
+		logoView.setCurrentTime(getTimeSinceStartup());
+		logoView.render(this);
 	}
 	
 	@Override
