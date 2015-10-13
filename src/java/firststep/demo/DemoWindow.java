@@ -2,14 +2,47 @@ package firststep.demo;
 
 import firststep.Color;
 import firststep.Framebuffer;
-import firststep.Transform;
 import firststep.Window;
-import firststep.contracts.Animatable;
-import firststep.contracts.Renderable;
-import firststep.demo.base.Animation;
+import firststep.internal.portaudio.BlockingStream;
+import firststep.internal.portaudio.PortAudio;
+import firststep.internal.portaudio.StreamParameters;
 
 public class DemoWindow extends Window {
 
+	private class SoundThread extends Thread {
+		private volatile boolean stopFlag = false;
+		
+		public void stopSound() { stopFlag = true; }
+		public void run() {
+			PortAudio.initialize();
+			
+			int channels = 2;
+			int frames = 100;
+
+			StreamParameters isp = new StreamParameters();
+			isp.channelCount = channels;
+			isp.device = PortAudio.getDefaultOutputDevice();
+			isp.sampleFormat = PortAudio.FORMAT_FLOAT_32;
+			
+			BlockingStream bs = PortAudio.openStream(null, isp, 44100, frames, 0);
+			bs.start();
+			float[] buf = new float[frames * channels];
+			int p = 0;
+			for (int k = 0; k < 44100 * 5 / frames; k++) {
+				for (int i = 0; i < buf.length; i += 2) {
+					buf[i] = (float) (0.05f * Math.sin(2 * Math.PI * p / 44100 * 200));
+					buf[i + 1] = (float) (0.05f * Math.sin(2 * Math.PI * p / 44100 * 200));
+					p++;
+				}
+				if (stopFlag) break;
+				bs.write(buf, frames);
+			}
+			bs.stop();
+		}
+	};
+	
+	private SoundThread soundThread = new SoundThread();
+	
 	private static final String APPNAME = "Welcome to firststep";
 	
 	private static float fps = 25.0f;
@@ -59,10 +92,19 @@ public class DemoWindow extends Window {
 		//logoView.setSize(width, height);
 	}
 	
+	@Override
+	public void onClose() {
+		soundThread.stopSound();
+		super.onClose();
+	}
+	
 	public DemoWindow() {
 		super (APPNAME, 600, 400, Color.fromRGBA(backRed, backGreen, backBlue, 1.0f));
 		startupMoment = System.currentTimeMillis();
+		soundThread.start();
 	}
+	
+	
 	
 	public static void main(String... args) {
 		new DemoWindow();
