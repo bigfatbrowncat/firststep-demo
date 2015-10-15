@@ -1,5 +1,8 @@
 package firststep.demo;
 
+import bellmodel.MatPoint;
+import bellmodel.ModelCalc;
+import bellmodel.ModelData;
 import firststep.Color;
 import firststep.Framebuffer;
 import firststep.Window;
@@ -13,25 +16,63 @@ public class DemoWindow extends Window {
 		private volatile boolean stopFlag = false;
 		
 		public void stopSound() { stopFlag = true; }
+		
+		private ModelCalc initBells(double dt) {
+			MatPoint wlL  = new MatPoint(1e+14,   -1.0,   0,    0,  -0.9,     0, 0, 0, 0, 0, false);
+
+			MatPoint mpt11 = new MatPoint(1.0,    -0.5 + 0.05,  -0.5,  0,  -0.5,  -0.5, 0, 0, 0, 0, true); 
+			MatPoint mpt12 = new MatPoint(0.998,  -0.5,   0.5,  0,  -0.5,   0.5, 0, 0, 0, 0, true); 
+			MatPoint mpt21 = new MatPoint(1.0005,  0.5,  -0.5,  0,   0.5,  -0.5, 0, 0, 0, 0, true); 
+			MatPoint mpt22 = new MatPoint(0.997,   0.5,   0.5,  0,   0.5,   0.5, 0, 0, 0, 0, true); 
+			
+			MatPoint wlR  = new MatPoint(1e+14,    1.0,   0,    0,   0.9,     0, 0, 0, 0, 0, false);
+			
+			MatPoint.connect(wlL, mpt11);
+			MatPoint.connect(wlL, mpt12);
+			MatPoint.connect(mpt11, mpt12);
+			MatPoint.connect(mpt11, mpt21);
+			MatPoint.connect(mpt12, mpt22);
+			MatPoint.connect(mpt21, mpt22);
+			MatPoint.connect(mpt21, wlR);
+			MatPoint.connect(mpt22, wlR);
+			
+			ModelData md = new ModelData(3.e+10, 300);
+			md.add(wlL);
+			md.add(mpt11);
+			md.add(mpt12);
+			md.add(mpt21);
+			md.add(mpt22);
+			md.add(wlR);
+			
+			ModelCalc mc = new ModelCalc(md, 0.002, 1, dt);
+			return mc;
+		}
+		
 		public void run() {
 			PortAudio.initialize();
 			
 			int channels = 2;
 			int frames = 100;
+			int freq = 44100;
+
+			double longitude = 60;
+			
+			ModelCalc mc = initBells(1.0 / frames / freq);
 
 			StreamParameters isp = new StreamParameters();
 			isp.channelCount = channels;
 			isp.device = PortAudio.getDefaultOutputDevice();
 			isp.sampleFormat = PortAudio.FORMAT_FLOAT_32;
 			
-			BlockingStream bs = PortAudio.openStream(null, isp, 44100, frames, 0);
+			BlockingStream bs = PortAudio.openStream(null, isp, freq, frames, 0);
 			bs.start();
 			float[] buf = new float[frames * channels];
 			int p = 0;
-			for (int k = 0; k < 44100 * 5 / frames; k++) {
+			for (int k = 0; k < freq * longitude / frames; k++) {
 				for (int i = 0; i < buf.length; i += 2) {
-					buf[i] = (float) (0.05f * Math.sin(2 * Math.PI * p / 44100 * 200));
-					buf[i + 1] = (float) (0.05f * Math.sin(2 * Math.PI * p / 44100 * 200));
+					double x = mc.doStep(); 
+					buf[i] = (float) x;
+					buf[i + 1] = (float) x;
 					p++;
 				}
 				if (stopFlag) break;
@@ -109,6 +150,7 @@ public class DemoWindow extends Window {
 	public static void main(String... args) {
 		new DemoWindow();
 		
+
 		Window.loop(fps);
 	}
 }

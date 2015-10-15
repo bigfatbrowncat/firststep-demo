@@ -6,11 +6,53 @@ project (${PROJNAME})
 
 # Native code
 
+#	N1. Titles
+set(LIBNAME ${PROJNAME})
+find_package(JNI)
+
+#	N2. Options and flags
+if(MINGW)
+	SET(CMAKE_SHARED_LIBRARY_PREFIX "")
+	SET(CMAKE_SHARED_MODULE_PREFIX "")
+endif (MINGW)
+
+SET(CMAKE_C_FLAGS "-std=gnu99")
+
+IF(APPLE)
+	SET(MACOSX_RPATH FALSE)
+    SET(EXTRA_LIBS "")
+	SET(CMAKE_EXE_LINKER_FLAGS "-std=gnu99")
+ELSEIF(WIN32)
+	SET(EXTRA_LIBS "")
+	SET(CMAKE_EXE_LINKER_FLAGS "-std=gnu99 -static -static-libgcc -static-libstdc++ -mwindows")
+	SET(CMAKE_SHARED_LINKER_FLAGS "-std=gnu99 -static -static-libgcc -static-libstdc++ -mwindows")
+ENDIF()
+
+#	N3. Sources
+file(GLOB SOURCES_CPP "${CMAKE_CURRENT_SOURCE_DIR}/src/native/*.cpp")
+set(SOURCES
+	${SOURCES_CPP} 
+)
+
+#	N4. Includes
+
+include_directories(
+	${JAVA_INCLUDE_PATH}
+	${JAVA_INCLUDE_PATH2}
+)
+
+#	N5. Linking
+add_library(
+	${LIBNAME}
+	SHARED 
+	${SOURCES}
+)
+target_link_libraries(${LIBNAME})
 
 # Java code
 
 # 	J1. Titles
-set(JARNAME ${PROJNAME})
+set(JARNAME "${PROJNAME}-java")
 find_package(Java REQUIRED)
 include(cmake_patches/UseJavaCustom.cmake)
 
@@ -45,7 +87,7 @@ else (MINGW)
 	)
 endif (MINGW)
 
-message(STATUS "CMD: ${CMD}")
+message(STATUS "Runner command: ${CMD}")
 
 add_custom_target(
 	run 
@@ -58,5 +100,7 @@ add_custom_target(
 add_subdirectory(firststep)
 
 #	D2. Target dependencies
+add_dependencies(run ${PROJNAME})
 add_dependencies(${PROJNAME} firststep)
-add_dependencies(run ${JARNAME})
+add_dependencies(${PROJNAME} ${JARNAME})
+add_dependencies(${PROJNAME} ${LIBNAME})
